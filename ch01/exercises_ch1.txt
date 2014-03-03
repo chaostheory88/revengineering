@@ -159,4 +159,10 @@ Into smash_return the eax value is filled with the maximum integer value,
 becames 0x2. It is possible to verify this condition for example using gdb and setting
 a breakpoint at the line "mov ecx, eax", just after the function returns.
 
------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+
+Exercises based on Windows code into the loop sections etc. will be done not so quickly because I have
+no time to do it now, like configuring the debugging environment and so on...
+So quickly I'll publish solutions based on x86_64 after this section and solution based on ARM arch.
+
+------------------------------------------------------------------------------------------------------
