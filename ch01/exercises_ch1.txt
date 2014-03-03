@@ -25,7 +25,7 @@ value for string termination in ascii). REPNE also decrements the value of ecx b
 at each iteration. REPNE and SCASB also sets the zero flag. So when the flag is setted
 or ecx arrives at zero iteration stops.
 At 06 ecx gets incremented by 2 and at 07 gets negated so it marks the position just after
-the null byte. The char at [EPP+12] (which using CDECL is also the second parameter to this
+the null byte. The char at [EBP+12] (which using CDECL is also the second parameter to this
 function) is copied into eax, at 09 the edi points again to the first character of the string.
 At 10 REP STOSB is called starting counting down from the value actually contained in ecx, and
 filling the string with che char cotained into al register.
@@ -154,7 +154,7 @@ smash_return:
         pop ebp
         ret
 
-Into smash_return the eax value is filled with the maximum unsigned integer value,
+Into smash_return the eax value is filled with the maximum integer value,
 0xFFFFFFFF. After that it is incremented by 0x3. The value of eax after this addition
 becames 0x2. It is possible to verify this condition for example using gdb and setting
 a breakpoint at the line "mov ecx, eax", just after the function returns.
