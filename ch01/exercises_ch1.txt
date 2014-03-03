@@ -30,7 +30,7 @@ function) is copied into eax, at 09 the edi points again to the first character 
 At 10 REP STOSB is called starting counting down from the value actually contained in ecx, and
 filling the string with che char cotained into al register.
 At 11 the the new string filled with the character into al is returned into eax.
-This snippet of code let me think about the memcpy function.
+This snippet of code let me think about the memset() function.
 
 ------------------------------------------------------------------------------------------------
 
