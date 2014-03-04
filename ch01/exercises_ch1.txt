@@ -135,30 +135,6 @@ bit register (EAX). What happens when the return value does not fit in a 32-bit
 register? Write a program to experiment and evaluate your answer. Does the
 mechanism change from compiler to compiler?
 
-Of course an integer overflow occurs, the following example demonstrates the problem:
-
-        section .text
-        global _start
-_start:
-        call smash_return
-        mov ecx, eax
-        mov eax, 0x1
-        mov ebx, 0x0
-        int 0x80
-smash_return:
-        push ebp
-        mov ebp, esp
-        mov eax, 0xFFFFFFFF
-        add eax, 0x3
-        mov esp, ebp
-        pop ebp
-        ret
-
-Into smash_return the eax value is filled with the maximum integer value,
-0xFFFFFFFF. After that it is incremented by 0x3. The value of eax after this addition
-becames 0x2. It is possible to verify this condition for example using gdb and setting
-a breakpoint at the line "mov ecx, eax", just after the function returns.
-
 ------------------------------------------------------------------------------------------------------
 
 Exercises based on Windows code into the loop sections etc. will be done not so quickly because I have
