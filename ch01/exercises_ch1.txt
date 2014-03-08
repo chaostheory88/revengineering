@@ -135,10 +135,71 @@ bit register (EAX). What happens when the return value does not fit in a 32-bit
 register? Write a program to experiment and evaluate your answer. Does the
 mechanism change from compiler to compiler?
 
-------------------------------------------------------------------------------------------------------
+Here a simple snippet of code which uses a function to return a value (called test struct)
+bigger than 32 bits:
 
-Exercises based on Windows code into the loop sections etc. will be done not so quickly because I have
-no time to do it now, like configuring the debugging environment and so on...
-So quickly I'll publish solutions based on x86_64 after this section and solutions based on ARM arch.
+#include <stdio.h>
+#include <stdlib.h>
+
+struct test {
+  unsigned int a;
+  unsigned int b;
+  unsigned int c;
+};
+
+
+static struct test
+test_return(void)
+{
+  struct test ret_test;
+  ret_test.a = 0x1;
+  ret_test.b = 0x2;
+  ret_test.c = 0x3;
+  return ret_test;
+}
+    
+int
+main(int argc, char *argv[])
+{
+  struct test my_test;
+  my_test = test_return();
+  printf("%d %d %d\n",my_test.a, my_test.b, my_test.c);
+  return 0;
+}
+
+The first disassebly which follows here is about the test_function() and
+the code is compiled using gcc 4.8.2:
+
+<test_return>:
+        01:	55	        push   ebp
+        02:	89 e5                   mov    ebp,esp
+        03:	83 ec 10                sub    esp,0x10
+        04:	c7 45 f4 01 00 00 00    mov    DWORD PTR [ebp-0xc],0x1
+        05:	c7 45 f8 02 00 00 00    mov    DWORD PTR [ebp-0x8],0x2
+        06:	c7 45 fc 03 00 00 00    mov    DWORD PTR [ebp-0x4],0x3
+        07:	8b 45 08                mov    eax,DWORD PTR [ebp+0x8]
+        08:	8b 55 f4                mov    edx,DWORD PTR [ebp-0xc]
+        09:	89 10                   mov    DWORD PTR [eax],edx
+        10:	8b 55 f8                mov    edx,DWORD PTR [ebp-0x8]
+        11:	89 50 04                mov    DWORD PTR [eax+0x4],edx
+        12:	8b 55 fc                mov    edx,DWORD PTR [ebp-0x4]
+        13:	89 50 08                mov    DWORD PTR [eax+0x8],edx
+        14:	8b 45 08                mov    eax,DWORD PTR [ebp+0x8]
+        15:	c9                      leave  
+        16:	c2 04 00                ret    0x4
+
+From 01 to 02, the usual function prologue is builded. At 03 space on
+the stack is reserved for ret_struct, it's 16 bytes despite the fact
+ret_struct is 12 bytes because compiler padding.
+From 04 to 06 ret_struct is filled in reverse order.
+At 07 into eax gets loaded the address of my_test declared into the
+main() function.
+From 08 to 13, ret_struct fields are copied into my_test struct
+using the edx register to hold the current field to copy.
+At 14, the eax gets filled again with the my_test struct address,
+which now has the fields of ret_struct.
+So the stack is used to return values bigger than 32 bits, and the
+eax points to the first address on the stack which references the
+result.
 
 ------------------------------------------------------------------------------------------------------
