@@ -202,4 +202,48 @@ So the stack is used to return values bigger than 32 bits, and the
 eax points to the first address on the stack which references the
 result.
 
+The second disasassebly comes from the clang 3.4.1:
+
+<test_return>:
+        01:	55                   	push   ebp
+        02:	89 e5                	mov    ebp,esp
+        03:	83 ec 10             	sub    esp,0x10
+        04:	8b 45 08             	mov    eax,DWORD PTR [ebp+0x8]
+        05:	c7 45 f0 01 00 00 00 	mov    DWORD PTR [ebp-0x10],0x1
+        06:	c7 45 f4 02 00 00 00 	mov    DWORD PTR [ebp-0xc],0x2
+        07:	c7 45 f8 03 00 00 00 	mov    DWORD PTR [ebp-0x8],0x3
+        08:	f2 0f 10 45 f0       	movsd  xmm0,QWORD PTR [ebp-0x10]
+        09:	f2 0f 11 00          	movsd  QWORD PTR [eax],xmm0
+        10:	c7 40 08 03 00 00 00 	mov    DWORD PTR [eax+0x8],0x3
+        11:	83 c4 10             	add    esp,0x10
+        12:	5d                   	pop    ebp
+        13:	c2 04 00             	ret    0x4
+
+From 01 to 02 there's the usual function prologue.
+At 03, 16 bytes gets allocated for ret_struct. At 04, the reference on the stack
+of my_test struct allocated into main, gets loaded into eax.
+From 05 to 07, fields of ret_struct are filled on the stack, putting the first
+value at the stack's top.
+At 08, something "strange" happens, the first 64 bits on the stack (starting from TOP)
+gets loaded into an XMMx register. XMM0-XMM7 are SSE2 registers and are 128 bits wide.
+This is what the Intel Manual vol. 2A says about the MOVSD instruction:
+
+"MOVSD moves a scalar double-precision floating-point value from the source
+operand (second operand) to the destination operand (first operand).
+The source and destination operands can be XMM registers or 64-bit memory
+locations. This instruction can be used to move a double-precision floating-point
+value to and from the low quad-word of an XMM register and a 64-bit memory location,
+or to move a double-precision floating-point value between the low quadwords of two XMM
+registers. The instruction cannot be used to transfer data between memory locations."
+
+At 09 my_struct which is referenced by it's address loaded into eax register, gets
+filled with the contents of the XMM0 register which holds respectively 64 bits
+taken from the stack which are the ret_struct value 0x1 and 0x2.
+At 10, the last ret_struct value is copied just after the 0x1 and 0x2 value.
+At 11 the ESP is incremented of 16 bytes and the function frame is freed.
+
+Despite this kind of optimizations using the XMM0 register and the unusual
+function epilogue, the return register EAX is used again to point to the first
+stack address where the struct is located.
+
 ------------------------------------------------------------------------------------------------------
