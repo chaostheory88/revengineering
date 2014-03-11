@@ -1,7 +1,6 @@
-%macro PROLOGUE 1
+%macro PROLOGUE 0
         push ebp
         mov ebp, esp
-        sub esp, %1
 %endmacro
 
 %macro EPILOGUE 0
@@ -9,12 +8,20 @@
         ret
 %endmacro
 
+%macro ALLOCATE 1
+        sub esp, %1
+%endmacro
+
+%macro DEALLOCATE 1
+        add esp, %1
+%endmacro
+
         section .text
         global _strlen,_strchr,_memcpy,_memset,_strcmp,_strset
 
         ;; size_t strlen(const char *s)
 _strlen:
-        PROLOGUE 0
+        PROLOGUE
         push ecx
         push edi
         xor ecx, ecx
@@ -33,6 +40,18 @@ __end_strlen_loop:
         
         ;; char *strchr(const char *s, int c)
 _strchr:
+        PROLOGUE
+        push edi
+        mov eax, [ebp+12]
+        mov edi, [ebp+8]
+__start_strchr_loop:
+        scasb
+        jz __end_strchr_loop
+        jmp __start_strchr_loop
+__end_strchr_loop:
+        lea eax, [edi-0x1]
+        pop edi
+        EPILOGUE
 
         ;; void *memcpy(void *dest, const void *src, size_t n)
 _memcpy:
