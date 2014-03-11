@@ -8,7 +8,13 @@ extern void * _memset(void *s, int c, size_t n);
 extern int _strcmp(const char *s1, const char *s2);
 extern char * _strset(const char *str, char c);
 
+const char *string = "test";
+
 int
 main(int argc, char *argv[]){
+  size_t size;
+  size = _strlen(string);
+  printf("%d\n",size);
+  
   exit(EXIT_SUCCESS);
 }

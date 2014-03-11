@@ -4,17 +4,33 @@
         sub esp, %1
 %endmacro
 
-%macro EPILOGUE
+%macro EPILOGUE 0
         pop ebp
         leave
         ret
 %endmacro
 
         section .text
-        global strlen,strchr,memcpy,memset,strcmp,strset
+        global _strlen,_strchr,_memcpy,_memset,_strcmp,_strset
 
         ;; size_t strlen(const char *s)
 _strlen:
+        PROLOGUE 0
+        push ecx
+        push edi
+        xor ecx, ecx
+        mov edi, [ebp+8]
+        mov al, 0x0 
+__start_strlen_loop:
+        scasb
+        jz __end_strlen_loop
+        inc ecx
+        jmp __start_strlen_loop
+__end_strlen_loop:
+        mov eax, ecx
+        pop edi
+        pop ecx
+        EPILOGUE
         
         ;; char *strchr(const char *s, int c)
 _strchr:
