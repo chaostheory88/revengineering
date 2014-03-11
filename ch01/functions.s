@@ -5,7 +5,6 @@
 %endmacro
 
 %macro EPILOGUE 0
-        pop ebp
         leave
         ret
 %endmacro
