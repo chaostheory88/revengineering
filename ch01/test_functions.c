@@ -21,6 +21,10 @@ main(int argc, char *argv[]){
 
   ptr = _strchr(string,ch);
   printf("%s\n",ptr);
+
+  ptr = (char *)malloc(_strlen(string));
+  _memcpy(ptr,string,_strlen(string));
+  printf("%s\n",ptr);
   
   exit(EXIT_SUCCESS);
 }

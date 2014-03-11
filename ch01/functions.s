@@ -55,6 +55,23 @@ __end_strchr_loop:
 
         ;; void *memcpy(void *dest, const void *src, size_t n)
 _memcpy:
+        PROLOGUE
+        push edi
+        push esi
+        push ecx
+        mov ecx, [ebp+16]
+        mov esi, [ebp+12]
+        mov edi, [ebp+8]
+__start_memcpy_loop:
+        lodsb
+        stosb
+        loop __start_memcpy_loop
+__end_memcpy_loop:
+        lea eax, [ebp+8]
+        pop ecx
+        pop esi
+        pop edi
+        EPILOGUE
 
         ;; void *memset(void *s, int c, size_t n)
 _memset:	
