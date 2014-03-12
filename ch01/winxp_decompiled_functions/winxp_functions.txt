@@ -1,14 +1,28 @@
-void KeInitializeDpc(*value1, *value2, *value3){
-  eax = value1;
-  ecx = value2;
+struct PRKDPC {
+  short field_1;
+  char byte1;
+  char byte2;
+  char bytes_pad_1[7]; //because we don't need about that
+  PKDEFERRED_ROUTINE DeferredRoutine;
+  PVOID DeferredContext;
+  char bytes_pad_2[8];
+  int mask;
+  
+} 
 
-  memset(eax+28,0,4);
-  *(eax + 12) = ecx;
+VOID KeInitializeDpc(
+		     _Out_ PRKDPC Dpc,
+		     _In_ PKDEFERRED_ROUTINE DeferredRoutine,
+		     _In_opt_ PVOID DeferredContext
+		     )
+{
 
-  ecx = value3;
-  eax[0] = 19;
-  eax[2] = 0;
-  eax[3] = 1;
-  eax[16] = ecx;
+  memset(Dpc+28,0,4);
+  Dpc->DeferredRoutine = DeferredRoutine
+   
+  Dpc->field_1 = 0x13;
+  Dpc->byte_1 = 0x0;
+  Dpc->byte_2 = 0x1;
+  Dpc->DeferredContext = DeferredContext;
   
 }
