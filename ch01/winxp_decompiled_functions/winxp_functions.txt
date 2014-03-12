@@ -1,0 +1,14 @@
+void KeInitializeDpc(*value1, *value2, *value3){
+  eax = value1;
+  ecx = value2;
+
+  memset(eax+28,0,4);
+  *(eax + 12) = ecx;
+
+  ecx = value3;
+  eax[0] = 19;
+  eax[2] = 0;
+  eax[3] = 1;
+  eax[16] = ecx;
+  
+}
