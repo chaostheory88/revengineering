@@ -11,7 +11,6 @@
 %macro ALLOCATE 1
         sub esp, %1
 %endmacro
-
 %macro DEALLOCATE 1
         add esp, %1
 %endmacro
@@ -42,14 +41,23 @@ __end_strlen_loop:
 _strchr:
         PROLOGUE
         push edi
+	push ebx
         mov eax, [ebp+12]
         mov edi, [ebp+8]
 __start_strchr_loop:
         scasb
         jz __end_strchr_loop
+	mov bl,[edi]
+	test bl,bl
+	jz __ret_null
         jmp __start_strchr_loop
+__ret_null:
+	mov eax, 0x0
+	jmp __end_strchr
 __end_strchr_loop:
         lea eax, [edi-0x1]
+__end_strchr:	
+	pop ebx
         pop edi
         EPILOGUE
 

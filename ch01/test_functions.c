@@ -17,14 +17,17 @@ const char *str4 = "hallo";
 int
 main(int argc, char *argv[]){
   size_t size;
-  int ch = 'e';
+  int ch = 'p';
   char *ptr = NULL;
   
   size = _strlen(string);
   printf("%d\n",size);
 
   ptr = _strchr(string,ch);
-  printf("%s\n",ptr);
+  if (ptr)
+    printf("%s\n",ptr);
+  else
+    printf("strchr null pointer\n");
 
   ptr = (char *)malloc(_strlen(string));
   _memcpy(ptr,string,_strlen(string));
