@@ -12,6 +12,7 @@ const char *string = "testtesttesttest";
 const char *str1 = "hello";
 const char *str2 = "hellooooo";
 const char *str3 = "hell";
+const char *str4 = "hallo";
 
 int
 main(int argc, char *argv[]){
@@ -35,6 +36,7 @@ main(int argc, char *argv[]){
   printf("%d\n",_strcmp(str1,str2));
   printf("%d\n",_strcmp(str1,str1));
   printf("%d\n",_strcmp(str1,str3));
+  printf("%d\n",_strcmp(str1,str4));
 
   _strset(ptr,ch);
   printf("%s\n",ptr);
