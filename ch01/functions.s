@@ -93,7 +93,68 @@ __end_memset_loop:
         
         ;; int strcmp(const char *s1, const char *s2)
 _strcmp:
+        PROLOGUE
+        push ebx
+        push edx
+        push edi
+        push esi
+        push ecx
+        xor ecx, ecx
+        mov esi, [ebp+8]
+        mov edi, [ebp+12]
+        push esi
+        call _strlen
+        mov ebx, eax
+        DEALLOCATE 0x4
+        push edi
+        call _strlen
+        mov edx, eax
+        DEALLOCATE 0x4
+        cmp ebx, edx
+        jg __bigger_than
+        jl __lower_than
+        mov ecx, ebx
+        xor eax, eax
+__start_strcmp_loop:
+        mov ebx, [esi+ecx]
+        mov edx, [edi+ecx]
+        cmp bl, dl
+        jl __lower_than
+        jg __bigger_than
+        cmp ecx, 0x0
+        je __end
+        dec ecx
+        jmp __start_strcmp_loop
+__bigger_than:
+        mov eax, 0x1
+        jmp __end
+__lower_than:
+        mov eax, 0xFFFFFFFF
+        jmp __end
+__end:  
+        pop ecx
+        pop esi
+        pop edi
+        pop edx
+        pop ebx
+        EPILOGUE
 
         ;; char *strset(const char *str, char c)
 _strset:
+        PROLOGUE
+        push edi
+        push ecx
+        xor ecx, ecx
+        mov edi, [ebp+8]
+        push edi
+        call _strlen
+        mov ecx, eax
+        DEALLOCATE 0x4
+        mov eax, [ebp+12]
+__start_strset_loop:
+        stosb
+        loop __start_strset_loop
+        pop ecx
+        pop edi
+        EPILOGUE
         

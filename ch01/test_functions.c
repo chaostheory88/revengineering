@@ -9,6 +9,9 @@ extern int _strcmp(const char *s1, const char *s2);
 extern char * _strset(const char *str, char c);
 
 const char *string = "testtesttesttest";
+const char *str1 = "hello";
+const char *str2 = "hellooooo";
+const char *str3 = "hell";
 
 int
 main(int argc, char *argv[]){
@@ -27,6 +30,13 @@ main(int argc, char *argv[]){
   printf("%s\n",ptr);
 
   _memset(ptr,ch,_strlen(ptr));
+  printf("%s\n",ptr);
+
+  printf("%d\n",_strcmp(str1,str2));
+  printf("%d\n",_strcmp(str1,str1));
+  printf("%d\n",_strcmp(str1,str3));
+
+  _strset(ptr,ch);
   printf("%s\n",ptr);
   
   exit(EXIT_SUCCESS);
