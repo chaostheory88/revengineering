@@ -74,7 +74,22 @@ __end_memcpy_loop:
         EPILOGUE
 
         ;; void *memset(void *s, int c, size_t n)
-_memset:	
+_memset:
+        PROLOGUE
+        push ecx
+        push edi
+        xor ecx, ecx
+        mov edi, [ebp+8]
+        mov eax, [ebp+12]
+        mov ecx, [ebp+16]
+__start_memset_loop:
+        stosb
+        loop __start_memset_loop
+__end_memset_loop:
+        lea eax, [ebp+8]
+        pop edi
+        pop ecx
+        EPILOGUE
         
         ;; int strcmp(const char *s1, const char *s2)
 _strcmp:

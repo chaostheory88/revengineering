@@ -25,6 +25,9 @@ main(int argc, char *argv[]){
   ptr = (char *)malloc(_strlen(string));
   _memcpy(ptr,string,_strlen(string));
   printf("%s\n",ptr);
+
+  _memset(ptr,ch,_strlen(ptr));
+  printf("%s\n",ptr);
   
   exit(EXIT_SUCCESS);
 }
