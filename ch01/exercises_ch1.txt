@@ -247,3 +247,40 @@ function epilogue, the return register EAX is used again to point to the first
 stack address where the struct is located.
 
 ------------------------------------------------------------------------------------------------------
+
+1. Repeat the walk-through by yourself. Draw the stack layout, including parameters and local variables.
+
+You should do this alone, its struggling to put a stack layout here, I have done mine using paper and
+a pen. It's funny, try it yourself.
+
+2. In the example walk-through, we did a nearly one-to-one translation of the assembly code to C.
+As an exercise, re-decompile this whole function so that it looks more natural.
+What can you say about the developer's skill level/experience? Explain your reasons. Can you do a better job?
+
+The solution is at:
+https://github.com/chaostheory88/revengineering/blob/master/ch01/walk_through_decompiled.c
+
+3. In some of the assembly listings, the function name has a @ prefix followed by a number.
+Explain when and why this decoration exists.
+
+4. Implement the following functions in x86 assembly: strlen, strchr, memcpy,
+memset, strcmp, strset.
+
+You can find the solutions of this exercise at:
+https://github.com/chaostheory88/revengineering/blob/master/ch01/functions.s
+
+5. Decompile the following kernel routines in Windows:
+   -KeInitializeDpc
+   -KeInitializeApc
+   -ObFastDereferenceObject (and explain its calling convention)
+   -KeInitializeQueue
+   -KxWaitForLockChainValid
+   -KeReadyThread
+   -KiInitializeTSS
+   -RtlValidateUnicodeString
+
+You can find the solutions of this exercise at:
+https://github.com/chaostheory88/revengineering/tree/master/ch01/winxp_decompiled_functions
+
+
+------------------------------------------------------------------------------------------------------
