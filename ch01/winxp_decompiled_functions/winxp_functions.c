@@ -7,7 +7,6 @@ struct PRKDPC {
   PVOID DeferredContext;
   char bytes_pad_2[8];
   int mask;
-  
 } 
 
 VOID KeInitializeDpc(
@@ -90,7 +89,6 @@ typedef struct _KAPC {
     a->NormalContext = arg_1C;
   }
   else {
-
     a->ApcStateIndex = 0;
     a->ApcMode = 0;
     a->NormalContext = 0;
@@ -207,5 +205,107 @@ PSEUDO C decompilation following:
       ObjDereferenceObject(object);
 
       return;
+}
+
+/*
+.text:00429C2A ; =============== S U B R O U T I N E =======================================
+.text:00429C2A
+.text:00429C2A ; Attributes: bp-based frame
+.text:00429C2A
+.text:00429C2A                 public KeInitializeQueue
+.text:00429C2A KeInitializeQueue proc near             ; CODE XREF: sub_4B7590+6Fp
+.text:00429C2A                                         ; sub_5D0EB9+B3p ...
+.text:00429C2A
+.text:00429C2A arg_0           = dword ptr  8
+.text:00429C2A arg_4           = dword ptr  0Ch
+.text:00429C2A
+ 1 .text:00429C2A                 mov     edi, edi
+ 2 .text:00429C2C                 push    ebp
+ 3 .text:00429C2D                 mov     ebp, esp
+ 4 .text:00429C2F                 mov     eax, [ebp+arg_0]
+ 5 .text:00429C32                 and     dword ptr [eax+4], 0
+ 6 .text:00429C36                 mov     byte ptr [eax], 4
+ 7 .text:00429C39                 mov     byte ptr [eax+2], 0Ah
+ 8 .text:00429C3D                 lea     ecx, [eax+8]
+ 9 .text:00429C40                 mov     [ecx+4], ecx
+10 .text:00429C43                 mov     [ecx], ecx
+11 .text:00429C45                 lea     ecx, [eax+10h]
+12 .text:00429C48                 mov     [ecx+4], ecx
+13 .text:00429C4B                 mov     [ecx], ecx
+14 .text:00429C4D                 lea     ecx, [eax+20h]
+15 .text:00429C50                 mov     [ecx+4], ecx
+16 .text:00429C53                 mov     [ecx], ecx
+17 .text:00429C55                 mov     ecx, [ebp+arg_4]
+18 .text:00429C58                 and     dword ptr [eax+18h], 0
+19 .text:00429C5C                 test    ecx, ecx
+20 .text:00429C5E                 jz      short loc_429C67
+21 .text:00429C60
+22 .text:00429C60 loc_429C60:                             ; CODE XREF: KeInitializeQueue+44j
+23 .text:00429C60                 mov     [eax+1Ch], ecx
+24 .text:00429C63                 pop     ebp
+25 .text:00429C64                 retn    8
+26 .text:00429C67 ; --------------------------------------------------------------------------
+27 .text:00429C67                 movsx   ecx, ds:KeNumberProcessors
+28 .text:00429C6E                 jmp     short loc_429C60
+
+
+lines 3/4 function prologue.
+lines 4/5 set to zero the second 4 bytes pointed by arg_0
+lines 5/6 set byte pointed from arg_0 to 4
+lines 6/7 set bye pointed by arg_0+2 to 16
+
+lines 8/17 Initialize three structure at eax+0x8, eax+0x10, eax+0x20 respectly.
+           The two fields in the structures are inizialized at their very same address.
+
+line 18 eax+0x18 are zeroed
+line 19/28 set eax+0x1C to args_4 if not null,  to ds:KeNumberProcessor if arg_4 is null
+
+So arg_0 should be a struct like
+
+struct Q {
+     char[2] q_0;
+     char[2] q_2;
+     INT32 q_4;
+     PTRLIST ql_8;
+     char unk[4];
+     PTRLIST ql_10;
+     char unk[4];
+     INT32 q_18;
+     INT32/PTR32 q_1c;
+     PTRLIST ql_20;
+} *PTRQ;
+
+and
+
+typdef struct LIST {
+    PTRLIST l_0;
+    PTRLIST l_4;
+} *PTRLIST;
+
+
+ */
+
+void KeInitializeQueue(PTRQ arg_0,INT32 arg_4) {
+  arg_0->q_0[0] = 4;
+  arg_0->q_0[2] = 16;
+
+  arg_0->q_4 = 0;
+
+  PTRLIST l = arg_0->ql_8;
+  l->l_0 = l;
+  l->l_1 = l;
+
+  l = arg_0->ql_10;
+  l->l_0 = l;
+  l->l_1 = l;
+
+  l = arg_0->ql_20;
+  l->l_0 = l;
+  l->l_1 = l;
+
+  q->q_18 = arg_4 ? arg_4 : ds:KeNumberProcessors;
+
+  return;
+
 }
 
