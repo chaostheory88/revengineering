@@ -1,13 +1,28 @@
-struct PRKDPC {
-  short field_1;
-  char byte1;
-  char byte2;
-  char bytes_pad_1[7]; //because we don't need about that
-  PKDEFERRED_ROUTINE DeferredRoutine;
+typedef struct _KDPC
+{
+  UCHAR Type;
+  WORD Number;
+  UCHAR Importance;
+  LIST_ENTRY DpcListEntry;
+  PVOID DeferredRoutine;
   PVOID DeferredContext;
-  char bytes_pad_2[8];
-  int mask;
-} 
+  PVOID SystemArgument1;
+  PVOID SystemArgument2;
+  PVOID Lock
+} KDPC, *PKDPC;
+
+/*
+  kd> dt nt!_KDPC
+   +0x000 Type             : Int2B
+   +0x002 Number           : UChar
+   +0x003 Importance       : UChar
+   +0x004 DpcListEntry     : _LIST_ENTRY
+   +0x00c DeferredRoutine  : Ptr32     void
+   +0x010 DeferredContext  : Ptr32 Void
+   +0x014 SystemArgument1  : Ptr32 Void
+   +0x018 SystemArgument2  : Ptr32 Void
+   +0x01c Lock             : Ptr32 Uint4B
+ */
 
 VOID KeInitializeDpc(
 		     _Out_ PRKDPC Dpc,
@@ -16,12 +31,12 @@ VOID KeInitializeDpc(
 		     )
 {
 
-  memset(Dpc+28,0,4);
+  Dpc->Lock = NULL;
   Dpc->DeferredRoutine = DeferredRoutine
    
-  Dpc->field_1 = 0x13;
-  Dpc->byte_1 = 0x0;
-  Dpc->byte_2 = 0x1;
+  Dpc->Type = 0x13;
+  Dpc->Number = 0x0;
+  Dpc->Importance = 0x1;
   Dpc->DeferredContext = DeferredContext;
   
 }
