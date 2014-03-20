@@ -27,7 +27,8 @@ VOID KeInitializeDpc(
 }
 
 
- lkd> dt nt!_KAPC */
+/*
+  lkd> dt nt!_KAPC
    +0x000 Type             : Int2B
    +0x002 Size             : Int2B
    +0x004 Spare0           : Uint4B
@@ -42,46 +43,47 @@ VOID KeInitializeDpc(
    +0x02c ApcStateIndex    : Char
    +0x02d ApcMode          : Char
    +0x02e Inserted         : UChar
+*/
 
-typedef struct _KAPC {
-     Int2B	   Type,                +0x000
-       Int2B	   Size,		+0x002
-       Uint4B	   Spare0,           	+0x004
-       Ptr32 _KTHREAD Thread,      	+0x008
-       _LIST_ENTRY ApcListEntry,	+0x00c
-       Ptr32     void KernelRoutine,	+0x014
-       Ptr32     void RundownRoutine,	+0x018
-       Ptr32     void NormalRoutine ,	+0x01c
-       Ptr32 Void NormalContext ,	+0x020
-       Ptr32 Void SystemArgument1,	+0x024
-       Ptr32 Void SystemArgument2  ,	+0x028
-       Char ApcStateIndex,    		+0x02c
-       Char ApcMode          ,		+0x02d
-       UChar Inserted         ,		+0x02e
-       } *PKAPC;
-
+typedef struct _KAPC
+{
+  UCHAR Type;
+  UCHAR Size;
+  UCHAR SizeByte0;
+  PKTHREAD Thread;
+  LIST_ENTRY ApcListEntry;
+  PVOID KernelRoutine;
+  PVOID RoundownRoutine;
+  PVOID NormalRoutine;
+  PVOID NormalContext;
+  PVOID SystemArgument1;
+  PVOID SystemArgument2;
+  CHAR ApcStateIndex;
+  CHAR ApcMode;
+  UCHAR Inserted;
+} KAPC, *PKAPC;
 
 //  void KeInitializeApc(A* a, c,int d, c2, c3, int c4) {
-  void KeInitializeApc(
-		       *PKAPC arg_0,
-		       Ptr32 _KTHREAD arg_4,
-		       dword arg_8,
-		       PTR32 arg_C,
-		       PTR32 arg_10,
-		       PTR32 arg_14,
-		       char arg_18,
-		       dword arg_1C,
-		       ) {
+void KeInitializeApc(
+		     *PKAPC arg_0,
+		     Ptr32 _KTHREAD arg_4,
+		     dword arg_8,
+		     PTR32 arg_C,
+		     PTR32 arg_10,
+		     PTR32 arg_14,
+		     char arg_18,
+		     dword arg_1C,
+		     ) {
     
-    a->size = 0x30;
-    a->type = 0x12;
+  a->size = 0x30;
+  a->type = 0x12;
 
-    a->ApcStateIndex = (arg_8 == 2)? (char)2 : *((char *)arg_4+0x165);
+  a->ApcStateIndex = (arg_8 == 2)? (char)2 : *((char *)arg_4+0x165);
 
-    a->Thread = arg_4;
-    a->kernelRoutine = arg_c;
-    a->rundownRoutine = arg_10;
-    a->normalRoutine = arg_14; 
+  a->Thread = arg_4;
+  a->kernelRoutine = arg_c;
+  a->rundownRoutine = arg_10;
+  a->normalRoutine = arg_14; 
   
   if (arg_14 != 0) {
     a->ApcStateIndex = arg_18;
