@@ -76,46 +76,43 @@ typedef struct _KAPC
   CHAR ApcStateIndex;
   CHAR ApcMode;
   UCHAR Inserted;
-} KAPC, *PKAPC;
+} KAPC, *PRKAPC;
 
 //  void KeInitializeApc(A* a, c,int d, c2, c3, int c4) {
-void KeInitializeApc(
-		     *PKAPC arg_0,
-		     Ptr32 _KTHREAD arg_4,
-		     dword arg_8,
-		     PTR32 arg_C,
-		     PTR32 arg_10,
-		     PTR32 arg_14,
-		     char arg_18,
-		     dword arg_1C,
-		     ) {
-    
-  a->size = 0x30;
-  a->type = 0x12;
-
-  a->ApcStateIndex = (arg_8 == 2)? (char)2 : *((char *)arg_4+0x165);
-
-  a->Thread = arg_4;
-  a->kernelRoutine = arg_c;
-  a->rundownRoutine = arg_10;
-  a->normalRoutine = arg_14; 
+VOID
+KeInitializeApc (
+    __out PRKAPC Apc,
+    __in PRKTHREAD Thread,
+    __in KAPC_ENVIRONMENT Environment,
+    __in PKKERNEL_ROUTINE KernelRoutine,
+    __in_opt PKRUNDOWN_ROUTINE RundownRoutine,
+    __in_opt PKNORMAL_ROUTINE NormalRoutine,
+    __in_opt KPROCESSOR_MODE ApcMode,
+    __in_opt PVOID NormalContext
+		 ) {
+   
+  Apc->Size = 0x30;
+  Apc->Type = 0x12;
   
-  if (arg_14 != 0) {
-    a->ApcStateIndex = arg_18;
-    a->ApcMode = arg_18;
-    a->NormalContext = arg_1C;
+  if (Environment == CurrentApcEnvironment) {
+    Apc->ApcStateIndex = Thread->ApcStateIndex;
+  } else {
+    Apc->ApcStateIndex = Environment;
   }
-  else {
-    a->ApcStateIndex = 0;
-    a->ApcMode = 0;
-    a->NormalContext = 0;
-  } 
 
+  Apc->Thread = Thread;
+  Apc->KernelRoutine = KernelRoutine;
+  Apc->RundownRoutine = RundownRoutine;
+  Apc->NormalRoutine = NormalRoutine; 
+  
+  if (NormalRoutine == NULL) {
+    Apc->ApcMode = NULL;
+    Apc->NormalContext = NULL;
+  } else {
+    Apc->Inserted = NULL;
+  }
 
 }
-
-
-
 
 /*
 obsFastDereferenceObject 
