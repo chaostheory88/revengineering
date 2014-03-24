@@ -207,8 +207,12 @@ PSEUDO C decompilation following:
 
 */
 
-    void ObjFastDereferenceObject(PTR32 fastReference,
-				  PTR32 object){
+VOID
+FASTCALL
+ObjFastDereferenceObject(
+			 IN PEX_FAST_REF FastRef,
+				  IN PVOID Object)
+{
 
       if ((arg_cx->arg_0 ^ arg_dx) < 7) {
 	ATOMIC (arg_cx->arg_0++);
