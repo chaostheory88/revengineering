@@ -367,30 +367,64 @@ line 19/28 set eax+0x1C to args_4 if not null,  to ds:KeNumberProcessor if arg_4
 
 So arg_0 should be a struct like
 
-struct Q {
-     char[2] q_0;
-     char[2] q_2;
-     INT32 q_4;
-     PTRLIST ql_8;
-     char unk[4];
-     PTRLIST ql_10;
-     char unk[4];
-     INT32 q_18;
-     INT32/PTR32 q_1c;
-     PTRLIST ql_20;
-} *PTRQ;
+
+typedef struct _KQUEUE {
+    DISPATCHER_HEADER Header;
+    LIST_ENTRY EntryListHead;
+    ULONG CurrentCount;
+    ULONG MaximumCount;
+    LIST_ENTRY ThreadListHead;
+} KQUEUE, *PKQUEUE, *RESTRICTED_POINTER PRKQUEUE;
 
 and
 
-typdef struct LIST {
-    PTRLIST l_0;
-    PTRLIST l_4;
-} *PTRLIST;
-
+typedef struct _LIST_ENTRY {
+  struct _LIST_ENTRY  *Flink;
+  struct _LIST_ENTRY  *Blink;
+} LIST_ENTRY, *PLIST_ENTRY;
 
  */
 
-void KeInitializeQueue(PTRQ arg_0,INT32 arg_4) {
+/*
+  Commented Assembly of KeInitializeQueue
+
+  .text:0042B292 Queue           = dword ptr  8
+  .text:0042B292 Count           = dword ptr  0Ch
+  .text:0042B292
+  .text:0042B292                 mov     edi, edi
+  .text:0042B294                 push    ebp
+  .text:0042B295                 mov     ebp, esp
+  .text:0042B297                 mov     eax, [ebp+Queue]
+  .text:0042B29A                 and     dword ptr [eax+4], 0 ; Queue->Header.SignalState = 0
+  .text:0042B29E                 mov     byte ptr [eax], 4 ; Queue->Header.Type = 4
+  .text:0042B2A1                 mov     byte ptr [eax+2], 0Ah ; Queue->Header.Size = 10
+  .text:0042B2A5                 lea     ecx, [eax+8]    ; ecx = &(Queue->Header.WaitListHead)
+  .text:0042B2A8                 mov     [ecx+4], ecx    ; &(Queue->Header.WaitListHead->Blink) = ecx
+  .text:0042B2AB                 mov     [ecx], ecx      ; &(Queue->Header.WaitListHead->Flink) = ecx
+  .text:0042B2AD                 lea     ecx, [eax+10h]  ; ecx = EntryListHead
+  .text:0042B2B0                 mov     [ecx+4], ecx    ; EntryListHead->Blink = EntryListHead
+  .text:0042B2B3                 mov     [ecx], ecx      ; EntryListHead->Flink = EntryListHead
+  .text:0042B2B5                 lea     ecx, [eax+20h]  ; ecx = ThreadListHead
+  .text:0042B2B8                 mov     [ecx+4], ecx    ; ThreadListHead->Blink = ThreadListHead
+  .text:0042B2BB                 mov     [ecx], ecx      ; ThreadListHead->Flink = ThreadListHead
+  .text:0042B2BD                 mov     ecx, [ebp+Count] ; ecx = Count
+  .text:0042B2C0                 and     dword ptr [eax+18h], 0 ; Queue->CurrentCount = 0
+  .text:0042B2C4                 test    ecx, ecx        ; test if Count = 0
+  .text:0042B2C6                 jz      short loc_42B2CF ; if it is jump to...
+  .text:0042B2C8
+  .text:0042B2C8 loc_42B2C8:                             ; CODE XREF: KeInitializeQueue(x,x)+44j
+  .text:0042B2C8                 mov     [eax+1Ch], ecx  ; Queue->MaximumCount = Count
+  .text:0042B2CB                 pop     ebp
+  .text:0042B2CC                 retn    8
+
+  
+*/
+
+VOID KeInitializeQueue(
+		       _Out_  PRKQUEUE Queue,
+		       _In_   ULONG Count
+		       )
+{
   arg_0->q_0[0] = 4;
   arg_0->q_0[2] = 16;
 
