@@ -24,6 +24,25 @@ typedef struct _KDPC
    +0x01c Lock             : Ptr32 Uint4B
  */
 
+/*
+  ASSEMBLY KeInitializeDpc
+  .text:0040E982                 mov     edi, edi
+  .text:0040E984                 push    ebp
+  .text:0040E985                 mov     ebp, esp
+  .text:0040E987                 mov     eax, [ebp+Dpc]
+  .text:0040E98A                 mov     ecx, [ebp+DeferredRoutine]
+  .text:0040E98D                 and     dword ptr [eax+1Ch], 0
+  .text:0040E991                 mov     [eax+0Ch], ecx
+  .text:0040E994                 mov     ecx, [ebp+DeferredContext]
+  .text:0040E997                 mov     word ptr [eax], 13h
+  .text:0040E99C                 mov     byte ptr [eax+2], 0
+  .text:0040E9A0                 mov     byte ptr [eax+3], 1
+  .text:0040E9A4                 mov     [eax+10h], ecx
+  .text:0040E9A7                 pop     ebp
+  .text:0040E9A8                 retn    0Ch
+
+*/
+
 VOID KeInitializeDpc(
 		     _Out_ PRKDPC Dpc,
 		     _In_ PKDEFERRED_ROUTINE DeferredRoutine,
@@ -78,7 +97,40 @@ typedef struct _KAPC
   UCHAR Inserted;
 } KAPC, *PRKAPC;
 
-//  void KeInitializeApc(A* a, c,int d, c2, c3, int c4) {
+/*
+  ASSEMBLY KeInitializeApc
+  .text:0040E1F7                 mov     edi, edi
+  .text:0040E1F9                 push    ebp
+  .text:0040E1FA                 mov     ebp, esp
+  .text:0040E1FC                 mov     eax, [ebp+arg_0]
+  .text:0040E1FF                 mov     edx, [ebp+arg_8]
+  .text:0040E202                 cmp     edx, 2
+  .text:0040E205                 mov     ecx, [ebp+arg_4]
+  .text:0040E208                 mov     word ptr [eax], 12h
+  .text:0040E20D                 mov     word ptr [eax+2], 30h
+  .text:0040E213                 jz      loc_40DDB4
+  .text:0040E219
+  .text:0040E219 loc_40E219:
+  .text:0040E219                 mov     [eax+8], ecx
+  .text:0040E21C                 mov     ecx, [ebp+arg_C]
+  .text:0040E21F                 mov     [eax+14h], ecx
+  .text:0040E222                 mov     ecx, [ebp+arg_10]
+  .text:0040E225                 mov     [eax+2Ch], dl
+  .text:0040E228                 mov     [eax+18h], ecx
+  .text:0040E22B                 mov     ecx, [ebp+arg_14]
+  .text:0040E22E                 xor     edx, edx
+  .text:0040E230                 cmp     ecx, edx
+  .text:0040E232                 mov     [eax+1Ch], ecx
+  .text:0040E235                 jnz     loc_40E3D5
+  .text:0040E23B                 mov     [eax+2Dh], dl
+  .text:0040E23E                 mov     [eax+20h], edx
+  .text:0040E241
+  .text:0040E241 loc_40E241:
+  .text:0040E241                 mov     [eax+2Eh], dl
+  .text:0040E244                 pop     ebp
+  .text:0040E245                 retn    20h
+ */
+
 VOID
 KeInitializeApc (
     __out PRKAPC Apc,
@@ -115,48 +167,48 @@ KeInitializeApc (
 }
 
 /*
-obsFastDereferenceObject 
+  ASSEMBLY ObFastDereferenceObject
+  
+  PAGE:00494E6D                 mov     edi, edi
+  PAGE:00494E6F                 push    ebp
+  PAGE:00494E70                 mov     ebp, esp
+  PAGE:00494E72                 sub     esp, 0Ch
+  PAGE:00494E75                 push    ebx
+  PAGE:00494E76                 push    esi
+  PAGE:00494E77                 push    edi
+  PAGE:00494E78                 mov     edi, ecx
+  PAGE:00494E7A                 mov     ebx, edx
+  PAGE:00494E7C                 mov     [ebp+var_8], edi
+  PAGE:00494E7F
+  PAGE:00494E7F loc_494E7F:
+  PAGE:00494E7F                 mov     esi, [edi]
+  PAGE:00494E81                 mov     eax, esi
+  PAGE:00494E83                 xor     eax, ebx
+  PAGE:00494E85                 cmp     eax, 7
+  PAGE:00494E88                 mov     [ebp+var_C], esi
+  PAGE:00494E8B                 jnb     short loc_494EA8
+  PAGE:00494E8D                 lea     eax, [esi+1]
+  PAGE:00494E90                 mov     [ebp+var_4], eax
+  PAGE:00494E93                 mov     eax, [ebp+var_C]
+  PAGE:00494E96                 mov     ecx, [ebp+var_8]
+  PAGE:00494E99                 mov     edx, [ebp+var_4]
+  PAGE:00494E9C                 cmpxchg [ecx], edx
+  PAGE:00494E9F                 cmp     eax, esi
+  PAGE:00494EA1                 jnz     short loc_494E7F
+  PAGE:00494EA3
+  PAGE:00494EA3 loc_494EA3:
+  PAGE:00494EA3
+  PAGE:00494EA3                 pop     edi
+  PAGE:00494EA4                 pop     esi
+  PAGE:00494EA5                 pop     ebx
+  PAGE:00494EA6                 leave
+  PAGE:00494EA7                 retn  
+*/
 
- 1 05bbf10 8bff            mov     edi,edi
- 2 805bbf12 55              push    ebp
- 3 805bbf13 8bec            mov     ebp,esp
- 4 805bbf15 83ec0c          sub     esp,0Ch
- 5 805bbf18 53              push    ebx
- 6 805bbf19 56              push    esi
- 7 805bbf1a 57              push    edi
- 8 805bbf1b 8bf9            mov     edi,ecx
- 9 805bbf1d 8bda            mov     ebx,edx
-10 805bbf1f 897df8          mov     dword ptr [ebp-8],edi
-11 805bbf22 8b37            mov     esi,dword ptr [edi]
-12 805bbf24 8bc6            mov     eax,esi
-13 805bbf26 33c3            xor     eax,ebx
-14 805bbf28 83f807          cmp     eax,7
-15 805bbf2b 8975f4          mov     dword ptr [ebp-0Ch],esi
-16 805bbf2e 7318            jae     nt!ObFastDereferenceObject+0x38 (805bbf48)
-17 805bbf30 8d4601          lea     eax,[esi+1]
-18 805bbf33 8945fc          mov     dword ptr [ebp-4],eax
-19 805bbf36 8b45f4          mov     eax,dword ptr [ebp-0Ch]
-20 805bbf39 8b4df8          mov     ecx,dword ptr [ebp-8]
-21 805bbf3c 8b55fc          mov     edx,dword ptr [ebp-4]
-22 805bbf3f 0fb111          cmpxchg dword ptr [ecx],edx
-23 805bbf42 3bc6            cmp     eax,esi
-24 805bbf44 75dc            jne     nt!ObFastDereferenceObject+0x12 (805bbf22)
-25 805bbf48 8bcb            mov     ecx,ebx
-26 805bbf4a e8636cf6ff      call    nt!ObfDereferenceObject (80522bb2)
-27 805bbf4f 5f              pop     edi
-28 805bbf50 5e              pop     esi
-29 805bbf51 5b              pop     ebx
-30 805bbf52 c9              leave
-31 805bbf53 c3              ret
 
-
-
-
-
-line 4 reserves 12 bytes on stack 
-lines 5 to 7  save ebx, esi and edi 
-
-The parameters here are passed in register ecx and edx. 
+/*
+Line 4 reserves 12 bytes on stack, lines 5 to 7  save ebx, esi and edi. 
+The parameters here are passed in register ecx and edx. So the calling convention is FASTCALL.
 We will refer them as arg_cx and arg_dx.
 
 lines 8 to 15 move the first field pointed by ecx in ebp -12,
@@ -177,52 +229,87 @@ lines 18 to 23
 	              eax if not loop (start of the loop is line 15)
 	              until the incement succedded or the check at 15 failed.
 
-	      then on line 25 ebx is moved in ecx (why?) and then objDereferenceObject is called 
-	      lines 27/31 are register restoration and function epilogue
+	      then on line 25 ebx is moved in ecx because another FASTCALL to ObsDereferenceObject. 
+	      Lines 27/31 are register restoration and function epilogue
 
-	      Obscure points (to me):
-	      -> why increment in objDEREFERENCE? (should be decrement
-	      counter ref) 
-
-	      -> here[0] I found the implementationo of reactos. Here
-	      it semas obfDereferenceObject is alwayes called, in
-	      reactos version is called only when "fastDerefence"
-	      fails.
-
-	      -> line 25 (is for passing argument to
-	      ObjDereferenceObject? but ObjDereferenceObject isn't
-	      fastcall!)
-
-	      -> the xor and check on line 15 (can't figure out from reactos comments neither)
-	     
 stack
 
 ebp-4 = (arg_cx->arg_0) + 1
 ebp-8 = arg_cx
 ebp-12 = arg_cx->arg_0
 
-[0]http://doxygen.reactos.org/d0/d72/ex_8h_a1c4d9a1c94cde2bf267e32b41015c8bc.html#a1c4d9a1c94cde2bf267e32b41015c8bc
-
 PSEUDO C decompilation following:
 
 */
+
+/*
+  PAGE:00494E6D                 mov     edi, edi
+  PAGE:00494E6F                 push    ebp
+  PAGE:00494E70                 mov     ebp, esp
+  PAGE:00494E72                 sub     esp, 0Ch
+  PAGE:00494E75                 push    ebx
+  PAGE:00494E76                 push    esi
+  PAGE:00494E77                 push    edi
+  PAGE:00494E78                 mov     edi, ecx        ; save FastRef into edi
+  PAGE:00494E7A                 mov     ebx, edx        ; save Object into ebx
+  PAGE:00494E7C                 mov     [ebp+local_var2], edi ; save edi (FastRef pointer) into the 2nd stack var
+  PAGE:00494E7F
+  PAGE:00494E7F loc_494E7F:                             
+  PAGE:00494E7F                 mov     esi, [edi]      ; take the first word of FastRef (Object/Kref) and put it into esi
+  PAGE:00494E81                 mov     eax, esi        ; save previously saved Fastref (Object/Kref) word into eax
+  PAGE:00494E83                 xor     eax, ebx        ; xor previously saved FastRef (Object/Kref) with Object
+  PAGE:00494E85                 cmp     eax, 7          ; compare the xoring with 7
+  PAGE:00494E88                 mov     [ebp+local_var3], esi ; save Fastref (Object/Kref) into local_var3
+  PAGE:00494E8B                 jnb     short loc_494EA8 ; if kref >= 7 or if Fastref->Object != Object
+  PAGE:00494E8B                                         ; jump to loc_494EA8
+  PAGE:00494E8D                 lea     eax, [esi+1]    ; Fasteref->Kref++ goes in eax
+  PAGE:00494E90                 mov     [ebp+local_var1], eax ; save eax (Fastref->Kref+1) into local_var1
+  PAGE:00494E93                 mov     eax, [ebp+local_var3] ; save local_var3 (Fastref->Kref) into eax
+  PAGE:00494E96                 mov     ecx, [ebp+local_var2] ; save local_var2 (FastRef PTR) into ecx
+  PAGE:00494E99                 mov     edx, [ebp+local_var1] ; save local_var1 (Fastref->Kfref+1 into) edx
+  PAGE:00494E9C                 cmpxchg [ecx], edx      ; if Fastref->Kref == eax move edx in [ecx] else move edx in eax
+  PAGE:00494E9F                 cmp     eax, esi        ; check if eax was changed by the previous instruction
+  PAGE:00494EA1                 jnz     short loc_494E7F ; if the cmpxchg operation does not succedeed jump to loc_49E7F 
+  PAGE:00494EA3                                          ; else exit
+  PAGE:00494EA3 loc_494EA3:
+  PAGE:00494EA3                 pop     edi
+  PAGE:00494EA4                 pop     esi
+  PAGE:00494EA5                 pop     ebx
+  PAGE:00494EA6                 leave
+  PAGE:00494EA7                 retn
+  PAGE:00494EA8 ; ---------------------------------------------------------------------------
+  PAGE:00494EA8
+  PAGE:00494EA8 loc_494EA8:
+  PAGE:00494EA8                 mov     ecx, ebx
+  PAGE:00494EAA                 call    @ObfDereferenceObject@4 ; ObfDereferenceObject(x)
+  PAGE:00494EAF                 jmp     short loc_494EA3
+  PAGE:00494EAF @ObFastDereferenceObject@8 endp
+
+*/
+
+typedef struct _EX_FAST_REF {
+  union {
+    PVOID Object;
+    ULONG_PTR RefCnt : 3;
+    ULONG_PTR Value;
+  }
+} EX_FAST_REF, *PEX_FAST_REF;
 
 VOID
 FASTCALL
 ObjFastDereferenceObject(
 			 IN PEX_FAST_REF FastRef,
-				  IN PVOID Object)
+			 IN PVOID Object)
 {
 
-      if ((arg_cx->arg_0 ^ arg_dx) < 7) {
-	ATOMIC (arg_cx->arg_0++);
-      }
+  if ((arg_cx->arg_0 ^ arg_dx) < 7) {
+    ATOMIC (arg_cx->arg_0++);
+  }
 
+  /* Not sure how object is passed */
+  ObjDereferenceObject(object);
 
-      /* Not sure how object is passed */
-      ObjDereferenceObject(object);
-
-      return;
+  return;
 }
 
 /*
