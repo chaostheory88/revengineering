@@ -407,3 +407,19 @@ VOID KeInitializeQueue(
 
 }
 
+typedef struct _KSPIN_LOCK_QUEUE {
+    struct _KSPIN_LOCK_QUEUE * volatile Next;
+    PKSPIN_LOCK volatile Lock;
+} KSPIN_LOCK_QUEUE, *PKSPIN_LOCK_QUEUE;
+
+PKSPIN_LOCK_QUEUE
+KxWaitForLockChainValid (
+    __inout PKSPIN_LOCK_QUEUE LockQueue
+    )
+{
+  PKSPIN_LOCK_QUEUE AQueue;
+  
+  do {
+    SomeYieldingStuff();
+  } while ((AQueue = LockQueue->Next) == NULL); 
+}
