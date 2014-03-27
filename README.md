@@ -1,5 +1,5 @@
-revengineering
-==============
+Practical Reverse Engineering Solutions
+=======================================
 
 Practical Reverse Engineering exercise's solutions
 
