@@ -43,6 +43,8 @@ typedef struct _KDPC
 
 */
 
+/* WinXP SP3 */
+
 VOID KeInitializeDpc(
 		     _Out_ PRKDPC Dpc,
 		     _In_ PKDEFERRED_ROUTINE DeferredRoutine,
@@ -130,6 +132,8 @@ typedef struct _KAPC
   .text:0040E244                 pop     ebp
   .text:0040E245                 retn    20h
  */
+
+/* WinXP SP3 */
 
 VOID
 KeInitializeApc (
@@ -295,6 +299,8 @@ typedef struct _EX_FAST_REF {
   }
 } EX_FAST_REF, *PEX_FAST_REF;
 
+/* WinXP SP3 */
+
 VOID
 FASTCALL
 ObjFastDereferenceObject(
@@ -383,6 +389,8 @@ typedef struct _LIST_ENTRY {
 
 */
 
+/* WinXP SP3 */
+
 VOID KeInitializeQueue(
 		       _Out_  PRKQUEUE Queue,
 		       _In_   ULONG Count
@@ -412,6 +420,8 @@ typedef struct _KSPIN_LOCK_QUEUE {
     PKSPIN_LOCK volatile Lock;
 } KSPIN_LOCK_QUEUE, *PKSPIN_LOCK_QUEUE;
 
+/* Win7 x86_64 */
+
 PKSPIN_LOCK_QUEUE
 KxWaitForLockChainValid (
 			 __inout PKSPIN_LOCK_QUEUE LockQueue
@@ -424,6 +434,8 @@ KxWaitForLockChainValid (
   } while ((AQueue = LockQueue->Next) == NULL); 
 }
 
+
+/* Win7 x86_64 */
 
 VOID
 KeReadyThread (
