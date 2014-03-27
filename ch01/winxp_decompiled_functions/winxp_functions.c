@@ -313,45 +313,43 @@ ObjFastDereferenceObject(
 }
 
 /*
-.text:00429C2A ; =============== S U B R O U T I N E =======================================
-.text:00429C2A
-.text:00429C2A ; Attributes: bp-based frame
-.text:00429C2A
-.text:00429C2A                 public KeInitializeQueue
-.text:00429C2A KeInitializeQueue proc near             ; CODE XREF: sub_4B7590+6Fp
-.text:00429C2A                                         ; sub_5D0EB9+B3p ...
-.text:00429C2A
-.text:00429C2A arg_0           = dword ptr  8
-.text:00429C2A arg_4           = dword ptr  0Ch
-.text:00429C2A
- 1 .text:00429C2A                 mov     edi, edi
- 2 .text:00429C2C                 push    ebp
- 3 .text:00429C2D                 mov     ebp, esp
- 4 .text:00429C2F                 mov     eax, [ebp+arg_0]
- 5 .text:00429C32                 and     dword ptr [eax+4], 0
- 6 .text:00429C36                 mov     byte ptr [eax], 4
- 7 .text:00429C39                 mov     byte ptr [eax+2], 0Ah
- 8 .text:00429C3D                 lea     ecx, [eax+8]
- 9 .text:00429C40                 mov     [ecx+4], ecx
-10 .text:00429C43                 mov     [ecx], ecx
-11 .text:00429C45                 lea     ecx, [eax+10h]
-12 .text:00429C48                 mov     [ecx+4], ecx
-13 .text:00429C4B                 mov     [ecx], ecx
-14 .text:00429C4D                 lea     ecx, [eax+20h]
-15 .text:00429C50                 mov     [ecx+4], ecx
-16 .text:00429C53                 mov     [ecx], ecx
-17 .text:00429C55                 mov     ecx, [ebp+arg_4]
-18 .text:00429C58                 and     dword ptr [eax+18h], 0
-19 .text:00429C5C                 test    ecx, ecx
-20 .text:00429C5E                 jz      short loc_429C67
-21 .text:00429C60
-22 .text:00429C60 loc_429C60:                             ; CODE XREF: KeInitializeQueue+44j
-23 .text:00429C60                 mov     [eax+1Ch], ecx
-24 .text:00429C63                 pop     ebp
-25 .text:00429C64                 retn    8
-26 .text:00429C67 ; --------------------------------------------------------------------------
-27 .text:00429C67                 movsx   ecx, ds:KeNumberProcessors
-28 .text:00429C6E                 jmp     short loc_429C60
+  .text:00429C2A ; Attributes: bp-based frame
+  .text:00429C2A
+  .text:00429C2A                 public KeInitializeQueue
+  .text:00429C2A KeInitializeQueue proc near
+  .text:00429C2A
+  .text:00429C2A
+  .text:00429C2A arg_0           = dword ptr  8
+  .text:00429C2A arg_4           = dword ptr  0Ch
+  .text:00429C2A
+  1 .text:00429C2A                 mov     edi, edi
+  2 .text:00429C2C                 push    ebp
+  3 .text:00429C2D                 mov     ebp, esp
+  4 .text:00429C2F                 mov     eax, [ebp+arg_0]
+  5 .text:00429C32                 and     dword ptr [eax+4], 0
+  6 .text:00429C36                 mov     byte ptr [eax], 4
+  7 .text:00429C39                 mov     byte ptr [eax+2], 0Ah
+  8 .text:00429C3D                 lea     ecx, [eax+8]
+  9 .text:00429C40                 mov     [ecx+4], ecx
+  10 .text:00429C43                 mov     [ecx], ecx
+  11 .text:00429C45                 lea     ecx, [eax+10h]
+  12 .text:00429C48                 mov     [ecx+4], ecx
+  13 .text:00429C4B                 mov     [ecx], ecx
+  14 .text:00429C4D                 lea     ecx, [eax+20h]
+  15 .text:00429C50                 mov     [ecx+4], ecx
+  16 .text:00429C53                 mov     [ecx], ecx
+  17 .text:00429C55                 mov     ecx, [ebp+arg_4]
+  18 .text:00429C58                 and     dword ptr [eax+18h], 0
+  19 .text:00429C5C                 test    ecx, ecx
+  20 .text:00429C5E                 jz      short loc_429C67
+  21 .text:00429C60
+  22 .text:00429C60 loc_429C60:
+  23 .text:00429C60                 mov     [eax+1Ch], ecx
+  24 .text:00429C63                 pop     ebp
+  25 .text:00429C64                 retn    8
+  26 .text:00429C67 ; --------------------------------------------------------------------------
+  27 .text:00429C67                 movsx   ecx, ds:KeNumberProcessors
+  28 .text:00429C6E                 jmp     short loc_429C60
 
 
 lines 3/4 function prologue.
@@ -383,41 +381,6 @@ typedef struct _LIST_ENTRY {
   struct _LIST_ENTRY  *Blink;
 } LIST_ENTRY, *PLIST_ENTRY;
 
- */
-
-/*
-  Commented Assembly of KeInitializeQueue
-
-  .text:0042B292 Queue           = dword ptr  8
-  .text:0042B292 Count           = dword ptr  0Ch
-  .text:0042B292
-  .text:0042B292                 mov     edi, edi
-  .text:0042B294                 push    ebp
-  .text:0042B295                 mov     ebp, esp
-  .text:0042B297                 mov     eax, [ebp+Queue]
-  .text:0042B29A                 and     dword ptr [eax+4], 0 ; Queue->Header.SignalState = 0
-  .text:0042B29E                 mov     byte ptr [eax], 4 ; Queue->Header.Type = 4
-  .text:0042B2A1                 mov     byte ptr [eax+2], 0Ah ; Queue->Header.Size = 10
-  .text:0042B2A5                 lea     ecx, [eax+8]    ; ecx = &(Queue->Header.WaitListHead)
-  .text:0042B2A8                 mov     [ecx+4], ecx    ; &(Queue->Header.WaitListHead->Blink) = ecx
-  .text:0042B2AB                 mov     [ecx], ecx      ; &(Queue->Header.WaitListHead->Flink) = ecx
-  .text:0042B2AD                 lea     ecx, [eax+10h]  ; ecx = EntryListHead
-  .text:0042B2B0                 mov     [ecx+4], ecx    ; EntryListHead->Blink = EntryListHead
-  .text:0042B2B3                 mov     [ecx], ecx      ; EntryListHead->Flink = EntryListHead
-  .text:0042B2B5                 lea     ecx, [eax+20h]  ; ecx = ThreadListHead
-  .text:0042B2B8                 mov     [ecx+4], ecx    ; ThreadListHead->Blink = ThreadListHead
-  .text:0042B2BB                 mov     [ecx], ecx      ; ThreadListHead->Flink = ThreadListHead
-  .text:0042B2BD                 mov     ecx, [ebp+Count] ; ecx = Count
-  .text:0042B2C0                 and     dword ptr [eax+18h], 0 ; Queue->CurrentCount = 0
-  .text:0042B2C4                 test    ecx, ecx        ; test if Count = 0
-  .text:0042B2C6                 jz      short loc_42B2CF ; if it is jump to...
-  .text:0042B2C8
-  .text:0042B2C8 loc_42B2C8:                             ; CODE XREF: KeInitializeQueue(x,x)+44j
-  .text:0042B2C8                 mov     [eax+1Ch], ecx  ; Queue->MaximumCount = Count
-  .text:0042B2CB                 pop     ebp
-  .text:0042B2CC                 retn    8
-
-  
 */
 
 VOID KeInitializeQueue(
@@ -425,24 +388,20 @@ VOID KeInitializeQueue(
 		       _In_   ULONG Count
 		       )
 {
-  arg_0->q_0[0] = 4;
-  arg_0->q_0[2] = 16;
 
-  arg_0->q_4 = 0;
+  Queue->Header.SignalState = 0;
+  Queue->Header.Type = 4;
+  Queue->Header.WaitListHead->Blink = Queue->Header.WaitListHead;
+  Queue->Header.WaitListHead->Flink = Queue->Header.WaitListHead;
+  Queue->EntryListHead->Blink = Queue->EntryListHead;
+  Queue->EntryListHead->Flink = Queue->EntryListHead;
+  Queue->ThreadListHead->Blink = Queue->ThreadListHead;
+  Queue->ThreadListHead->Flink = Queue->ThreadListHead;
 
-  PTRLIST l = arg_0->ql_8;
-  l->l_0 = l;
-  l->l_1 = l;
-
-  l = arg_0->ql_10;
-  l->l_0 = l;
-  l->l_1 = l;
-
-  l = arg_0->ql_20;
-  l->l_0 = l;
-  l->l_1 = l;
-
-  q->q_18 = arg_4 ? arg_4 : ds:KeNumberProcessors;
+  if (Count )
+    Queue->MaximumCount = Count;
+  else
+    Queue->MaximumCount = KeNumberProcessors;
 
   return;
 
