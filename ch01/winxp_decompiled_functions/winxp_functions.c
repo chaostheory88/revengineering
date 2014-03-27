@@ -414,12 +414,27 @@ typedef struct _KSPIN_LOCK_QUEUE {
 
 PKSPIN_LOCK_QUEUE
 KxWaitForLockChainValid (
-    __inout PKSPIN_LOCK_QUEUE LockQueue
-    )
+			 __inout PKSPIN_LOCK_QUEUE LockQueue
+			 )
 {
   PKSPIN_LOCK_QUEUE AQueue;
   
   do {
     SomeYieldingStuff();
   } while ((AQueue = LockQueue->Next) == NULL); 
+}
+
+
+VOID
+KeReadyThread (
+	       __inout PKTHREAD Thread
+	       )
+{
+
+  if (Thread.SystemAffinityActive != 7) {
+    if(KiInSwapSingleProcess(Thread))
+      return;
+  }
+  KiFastReadyThread(Thread);
+  return;
 }
