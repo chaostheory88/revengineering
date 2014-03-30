@@ -169,84 +169,8 @@ KeInitializeApc (
   }
 
 }
+/* ObjFastDereferenceObject:
 
-/*
-  ASSEMBLY ObFastDereferenceObject
-  
-  PAGE:00494E6D                 mov     edi, edi
-  PAGE:00494E6F                 push    ebp
-  PAGE:00494E70                 mov     ebp, esp
-  PAGE:00494E72                 sub     esp, 0Ch
-  PAGE:00494E75                 push    ebx
-  PAGE:00494E76                 push    esi
-  PAGE:00494E77                 push    edi
-  PAGE:00494E78                 mov     edi, ecx
-  PAGE:00494E7A                 mov     ebx, edx
-  PAGE:00494E7C                 mov     [ebp+var_8], edi
-  PAGE:00494E7F
-  PAGE:00494E7F loc_494E7F:
-  PAGE:00494E7F                 mov     esi, [edi]
-  PAGE:00494E81                 mov     eax, esi
-  PAGE:00494E83                 xor     eax, ebx
-  PAGE:00494E85                 cmp     eax, 7
-  PAGE:00494E88                 mov     [ebp+var_C], esi
-  PAGE:00494E8B                 jnb     short loc_494EA8
-  PAGE:00494E8D                 lea     eax, [esi+1]
-  PAGE:00494E90                 mov     [ebp+var_4], eax
-  PAGE:00494E93                 mov     eax, [ebp+var_C]
-  PAGE:00494E96                 mov     ecx, [ebp+var_8]
-  PAGE:00494E99                 mov     edx, [ebp+var_4]
-  PAGE:00494E9C                 cmpxchg [ecx], edx
-  PAGE:00494E9F                 cmp     eax, esi
-  PAGE:00494EA1                 jnz     short loc_494E7F
-  PAGE:00494EA3
-  PAGE:00494EA3 loc_494EA3:
-  PAGE:00494EA3
-  PAGE:00494EA3                 pop     edi
-  PAGE:00494EA4                 pop     esi
-  PAGE:00494EA5                 pop     ebx
-  PAGE:00494EA6                 leave
-  PAGE:00494EA7                 retn  
-*/
-
-
-/*
-Line 4 reserves 12 bytes on stack, lines 5 to 7  save ebx, esi and edi. 
-The parameters here are passed in register ecx and edx. So the calling convention is FASTCALL.
-We will refer them as arg_cx and arg_dx.
-
-lines 8 to 15 move the first field pointed by ecx in ebp -12,
-             move ecx to ebp - 8
-	     then xor the first field pointed by ecx(arg_cx) with arg_dx and compare the result with 7 (lines 12 to 14)
-	     if the results is greater or equal to 7 it jumps at line
-             25, calling objDerefereneObject and returning.
-lines 18 to 23 
-             In this lines first field pointed by arg_cx is incremented in an atomic/thread safe  way trought the use of the cmpxchg instruction
-	     First the incremented value is moved at ebp - 4 (lines 17/18)
-	     Then the following registers are setted (lines 18/21):
-	     eax = *arg_cx
-	     ecx = first_argument
-	     edx = incremented value (*(arg_cx) + 1)
-	     Finally in line 22 cmpxchg is called. 
-
-	     lines 23 check if the increment is succesful comparing
-	              eax if not loop (start of the loop is line 15)
-	              until the incement succedded or the check at 15 failed.
-
-	      then on line 25 ebx is moved in ecx because another FASTCALL to ObsDereferenceObject. 
-	      Lines 27/31 are register restoration and function epilogue
-
-stack
-
-ebp-4 = (arg_cx->arg_0) + 1
-ebp-8 = arg_cx
-ebp-12 = arg_cx->arg_0
-
-PSEUDO C decompilation following:
-
-*/
-
-/*
   PAGE:00494E6D                 mov     edi, edi
   PAGE:00494E6F                 push    ebp
   PAGE:00494E70                 mov     ebp, esp
@@ -308,13 +232,18 @@ ObjFastDereferenceObject(
 			 IN PVOID Object)
 {
 
-  if ((arg_cx->arg_0 ^ arg_dx) < 7) {
-    ATOMIC (arg_cx->arg_0++);
+  /*
+	Thanks to the union and address alignment, this condition will test
+	both FastRef->Object != Object and FastRef->RefCnt > 7
+  */
+  while ((FastRef->Value ^ Object) < 7) {
+	  /* ATOMIC returns true if the increment of RefCnt (see lines around cmpxchg above) succedes */
+	  if (ATOMIC (FastRef->RefCnt++))
+		return;
   }
 
-  /* Not sure how object is passed */
+  /* If fastDereference fails */
   ObjDereferenceObject(object);
-
   return;
 }
 
