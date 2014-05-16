@@ -282,5 +282,106 @@ https://github.com/chaostheory88/revengineering/blob/master/ch01/functions.s
 You can find the solutions of this exercise at:
 https://github.com/chaostheory88/revengineering/tree/master/ch01/winxp_decompiled_functions
 
+6. Sample H. The function sub_13846 references several structures whose types are not entirely clear. 
+Your task is to first recover the function prototype and then try to reconstruct the structure fields.
+After reading Chapter 3, return to this exercise to see if your understanding has changed. (Note: This sample is targeting Windows XP x86.)
 
-------------------------------------------------------------------------------------------------------
+7. Sample H. The function sub_10BB6 has a loop searching for something. 
+First recover the function prototype and then infer the types based on the context.
+Hint: You should probably have a copy of the PE specification nearby.
+
+8. Sample H. Decompile sub_11732 and explain the most likely programming construct used in the original code.
+
+9. Sample L. Explain what function sub_1000CEA0 does and then decompile it back to C.
+
+You can find the solutions of malware samples exercises at:
+https://github.com/chaostheory88/revengineering/tree/master/ch01/malware_exercises
+
+10. If the current privilege level is encoded in CS, which is modifiable by user-mode code,
+why can't user-mode code modify CS to change CPL?
+
+11. Read the Virtual Memory chapter in Intel Software Developer Manual, Volume 3 and AMD64 Architecture Programmer's Manual, Volume 2: System Programming.
+Perform a few virtual address to physical address translations yourself and verify the result with a kernel debugger. 
+Explain how data execution prevention (DEP) works.
+
+12. Bruce's favorite x86/x64 disassembly library is BeaEngine by BeatriX (www.beaengine.org).
+Experiment with it by writing a program to disassemble a binary at its entry point.
+
+-------------------------------------------------------------------------------------------------------------------
+
+1. Explain two methods to get the instruction pointer on x64. At least one of the methods must use RIP addressing.
+
+1.a:
+
+(gdb) disassemble _start
+Dump of assembler code for function _start:
+   0x0000000000400080 <+0>:	lea    rax,[rip+0x0]        # 0x400087 <_start+7>
+   0x0000000000400087 <+7>:	mov    rax,0x3c
+   0x000000000040008e <+14>:	mov    rdi,0xa
+   0x0000000000400095 <+21>:	syscall 
+End of assembler dump.
+(gdb) b _start 
+Breakpoint 1 at 0x400080: file get_rip.S, line 4.
+(gdb) r
+Starting program: /home/spike/documents/hacking/practical_rev_engineering/revengineering/ch01/get_rip 
+
+Breakpoint 1, _start () at get_rip.S:4
+4		lea rax, [rip] 
+(gdb) s
+5		mov rax, 0x3c
+(gdb) i r $rip
+rip            0x400087	0x400087 <_start+7>
+(gdb) i r $rax
+rax            0x400087	4194439
+
+1.b:
+
+(gdb) disassemble _start
+Dump of assembler code for function _start:
+   0x0000000000400080 <+0>:	call   0x400087 <_ouch>
+   0x0000000000400085 <+5>:	jmp    0x40008a <_exit>
+End of assembler dump.
+(gdb) disassemble _ouch 
+Dump of assembler code for function _ouch:
+   0x0000000000400087 <+0>:	pop    rax
+   0x0000000000400088 <+1>:	push   rax
+   0x0000000000400089 <+2>:	ret    
+End of assembler dump.
+(gdb) disassemble _exit
+Dump of assembler code for function _exit:
+   0x000000000040008a <+0>:	mov    rax,0x3c
+   0x0000000000400091 <+7>:	mov    rdi,0xa
+   0x0000000000400098 <+14>:	syscall 
+End of assembler dump.
+(gdb) b _start
+Breakpoint 1 at 0x400080: file get_rip2.S, line 4.
+(gdb) r
+Starting program: /home/spike/documents/hacking/practical_rev_engineering/revengineering/ch01/get_rip2 
+
+Breakpoint 1, _start () at get_rip2.S:4
+4		call _ouch
+(gdb) s
+_ouch () at get_rip2.S:7
+7		pop rax
+(gdb) s
+_ouch () at get_rip2.S:8
+8		push rax
+(gdb) i r $rax
+rax            0x400085	4194437
+(gdb) i r $rip
+rip            0x400088	0x400088 <_ouch+1>
+(gdb) s
+_ouch () at get_rip2.S:9
+9		ret
+(gdb) i r $rip
+rip            0x400089	0x400089 <_ouch+2>
+(gdb) s
+_start () at get_rip2.S:5
+5		jmp _exit
+(gdb) i r $rip
+rip            0x400085	0x400085 <_start+5>
+(gdb) 
+
+2. Perform a virtual-to-physical address translation on x64. Were there any major differences compared to x86?
+
+-------------------------------------------------------------------------------------------------------------------
