@@ -300,6 +300,14 @@ https://github.com/chaostheory88/revengineering/tree/master/ch01/malware_exercis
 10. If the current privilege level is encoded in CS, which is modifiable by user-mode code,
 why can't user-mode code modify CS to change CPL?
 
+The CPL in the CS register must match with the current CPU's CPL level. So user software cannot
+directly change it.
+To switch between privilege levels in code segments the interrupt mechanism is needed.
+The actual CS CPL is compared against the DPL into the descriptor segment referenced by an
+in kernel segment selector. 
+If CPL <= DPL of the descriptor segment, the CPL gets updated and takes the value of the DPL
+into the kernel destination selector. 
+
 11. Read the Virtual Memory chapter in Intel Software Developer Manual, Volume 3 and AMD64 Architecture Programmer's Manual, Volume 2: System Programming.
 Perform a few virtual address to physical address translations yourself and verify the result with a kernel debugger. 
 Explain how data execution prevention (DEP) works.
