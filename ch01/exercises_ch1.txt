@@ -263,6 +263,18 @@ https://github.com/chaostheory88/revengineering/blob/master/ch01/walk_through_de
 3. In some of the assembly listings, the function name has a @ prefix followed by a number.
 Explain when and why this decoration exists.
 
+The '@' is present into functions which adopt fastcall and stdcall conventions, for example:
+3.a.
+	foo@8 means this function is using stdcall convention, parameters are passed from right
+	to left on the stack and the function on return issues a 'ret 8' to free allocated space if
+	in a 32bit arch are passed two 32 bits parameters. In other words the stack is freed by the
+	callee and not by the caller like in cdecl calling convention.
+3.b.
+	@foo@8 means this function is using fastcall convetion, first two params are passed, for
+	example, in a 32bit arch using registers ecx and edx, other params are passed using the stack.
+	Again the number 8 after the '@' is the number of bytes that the function needs to free on the stack
+	before it returns. So as well as the stdcall the callee has the obligation to free the stack.
+
 4. Implement the following functions in x86 assembly: strlen, strchr, memcpy,
 memset, strcmp, strset.
 
