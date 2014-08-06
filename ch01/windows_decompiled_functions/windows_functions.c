@@ -372,7 +372,7 @@ KeReadyThread (
 	       )
 {
 
-  if (Thread.SystemAffinityActive != 7) {
+  if (Thread->Process.StackCount != 7) {
     if(KiInSwapSingleProcess(Thread))
       return;
   }
